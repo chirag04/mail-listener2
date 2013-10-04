@@ -1,0 +1,21 @@
+{
+    "name": "mail-listener2",
+    "version": "0.1.0",
+    "description": "Mail listener library for node.js. Get notification when new email arrived.",
+    "dependencies": {
+      "imap": "*",
+      "mailparser": "*"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/chirag04/mail-listener2.git"
+    },
+    "homepage": "https://github.com/chirag04/mail-listener2",
+    "keywords": ["mail", "job", "imap", "mail listener", "email", "email parser"],
+    "author": {
+        "name": "Chirag Jain",
+        "email": "jain_chirag04@yahoo.com",
+        "url": "http://chiragjain.tumblr.com"
+    },
+    "license": "MIT"
+}
