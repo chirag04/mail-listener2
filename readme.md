@@ -32,7 +32,8 @@ var mailListener = new MailListener({
 
 mailListener.start(); // start listening
 
-mailListener.stop(); // stop listening
+// stop listening
+//mailListener.stop();
 
 mailListener.on("server:connected", function(){
   console.log("imapConnected");
