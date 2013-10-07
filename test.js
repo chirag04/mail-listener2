@@ -5,9 +5,12 @@ var mailListener = new MailListener({
   password: "xxx",
   host: "imap.gmail.com",
   port: 993,
+  tls: true,
+  tlsOptions: { rejectUnauthorized: false },
   mailbox: "INBOX",
   markSeen: true,
-  fetchUnreadOnStart: true
+  fetchUnreadOnStart: true,
+  mailParserOptions: {streamAttachments: true}
 });
 
 mailListener.start();

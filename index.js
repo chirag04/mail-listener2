@@ -6,16 +6,17 @@ var MailParser = require("mailparser").MailParser;
 module.exports = MailListener;
 
 function MailListener(options) {
-  this.markSeen = options.markSeen;
+  this.markSeen = !!options.markSeen;
   this.mailbox = options.mailbox || "INBOX";
-  this.fetchUnreadOnStart = options.fetchUnreadOnStart;
+  this.fetchUnreadOnStart = !!options.fetchUnreadOnStart;
+  this.mailParserOptions = options.mailParserOptions || {},
   this.imap = new Imap({
     user: options.username,
     password: options.password,
     host: options.host,
     port: options.port,
-    tls: true,
-    tlsOptions: { rejectUnauthorized: false }
+    tls: options.tls,
+    tlsOptions: options.tlsOptions || {}
   });
   
   this.imap.once('ready', imapReady.bind(this));
@@ -68,7 +69,7 @@ function parseUnread() {
     } else if(results.length > 0) {
       var f = self.imap.fetch(results, { bodies: '', markSeen: self.markSeen });
       f.on('message', function(msg, seqno) {
-        var parser = new MailParser();
+        var parser = new MailParser(self.mailParserOptions);
         parser.on("end", function(mail) {
           self.emit('mail',mail);
         });
