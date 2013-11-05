@@ -11,6 +11,7 @@ function MailListener(options) {
   this.fetchUnreadOnStart = !!options.fetchUnreadOnStart;
   this.mailParserOptions = options.mailParserOptions || {},
   this.imap = new Imap({
+    xoauth2: options.xoauth2,
     user: options.username,
     password: options.password,
     host: options.host,
