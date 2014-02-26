@@ -8,6 +8,7 @@ module.exports = MailListener;
 function MailListener(options) {
   this.markSeen = !!options.markSeen;
   this.mailbox = options.mailbox || "INBOX";
+  this.searchFilter = options.searchFilter || "UNSEEN";
   this.fetchUnreadOnStart = !!options.fetchUnreadOnStart;
   this.mailParserOptions = options.mailParserOptions || {},
   this.imap = new Imap({
@@ -64,7 +65,7 @@ function imapMail() {
 
 function parseUnread() {
   var self = this;
-  this.imap.search([ 'UNSEEN' ], function(err, results) {
+  this.imap.search([ self.searchFilter ], function(err, results) {
     if (err) {
       self.emit('error',err);
     } else if(results.length > 0) {
