@@ -71,9 +71,14 @@ function parseUnread() {
     } else if(results.length > 0) {
       var f = self.imap.fetch(results, { bodies: '', markSeen: self.markSeen });
       f.on('message', function(msg, seqno) {
-        var parser = new MailParser(self.mailParserOptions);
+        var parser = new MailParser(self.mailParserOptions),
+          attributes = null;
+          
         parser.on("end", function(mail) {
-          self.emit('mail',mail);
+          self.emit('mail', mail, seqno, attributes);
+        });
+        msg.on('attributes', function(attrs) {
+          attributes = attrs;
         });
         msg.on('body', function(stream, info) {
           stream.pipe(parser);
