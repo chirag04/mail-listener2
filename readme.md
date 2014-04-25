@@ -54,13 +54,31 @@ mailListener.on("error", function(err){
 mailListener.on("mail", function(mail){
   // do something with mail object including attachments
   console.log("emailParsed", mail);
+  
   // mail processing code goes here
 });
 
-// it's possible to access imap object from node-imap library for performing additional actions. E.x.
-mailListener.imap.move(:msguids, :mailboxes, function(){})
 
-```
+// move sample
+mailListener.on("mail", function(mail, seqno, attributes) {
+  var mailuid = jobInfo.attributes.uid,
+    toMailbox = 'moved-box';
+  
+  mailListener.imap.addFlags(mailuid, '\\SEEN', function (err) {
+    if (err) {
+      console.log('error marking message read/SEEN');
+      return;
+    }
+
+    console.log('moving to ' + toMailbox);
+    mailListener.imap.move(mailuid, toMailbox, function (err) {
+      if (err) {
+        console.log('error moving message');
+      }
+    });
+  });
+});
+
 
 That's easy!
 
