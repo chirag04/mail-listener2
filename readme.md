@@ -59,7 +59,7 @@ mailListener.on("mail", function(mail){
 });
 
 // A more complex example.
-// when new (UNSEEN) mail arrives mark it read (SEEN) and move it
+// When new (UNSEEN) mail arrives mark it read (SEEN) and move it.
 mailListener.on("mail", function(mail, seqno, attributes) {
   var mailuid = attributes.uid,
     toMailbox = 'moved-box';
