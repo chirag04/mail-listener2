@@ -51,17 +51,12 @@ mailListener.on("error", function(err){
 });
 
 mailListener.on("mail", function(mail){
+  // do something with mail object including attachments
   console.log("emailParsed", mail);
-
+  
   // process email
 });
 
-mailListener.start(); // start listening
-
-// wait for events, wait indefinitely, or pick your favorite job strategy
-
-// eventually ... stop listening
-//mailListener.stop();
 
 ```
 That's easy!
