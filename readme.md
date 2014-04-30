@@ -64,7 +64,7 @@ That's easy!
 
 ### a more complex example
 
- * Get the first 20 (UNSEEN) emails
+ * Get the first 20 unread (UNSEEN) emails
  * Mark them read (\SEEN)
  * Archive them
 
