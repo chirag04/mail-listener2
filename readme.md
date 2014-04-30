@@ -15,7 +15,6 @@ Install
 
 JavaScript Code:
 
-
 ```javascript
 
 var MailListener = require("mail-listener2");
@@ -54,16 +53,80 @@ mailListener.on("error", function(err){
 mailListener.on("mail", function(mail){
   // do something with mail object including attachments
   console.log("emailParsed", mail);
-  // mail processing code goes here
+  
+  // process email
 });
 
-// it's possible to access imap object from node-imap library for performing additional actions. E.x.
-mailListener.imap.move(:msguids, :mailboxes, function(){})
+
+```
+That's easy!
+
+
+### a more complex example
+
+ * Get the first 20 unread (UNSEEN) emails
+ * Mark them read (\SEEN)
+ * Archive them
+
+[full gist (yzorg)](https://gist.github.com/yzorg/11307678)
+
+``` javascript
+
+// copy all initialization and event logging above
+
+// make sure you include in options:  
+//   fetchUnreadOnStart: true,
+var count = 0;
+
+mailListener.on("mail", function(mail, seqno, attributes) {
+  var mailuid = attributes.uid,
+    toMailbox = '[Gmail]/All Mail',
+    i = ++count;
+
+  if (i > 20) {
+    mailListener.stop(); // start listening
+    return;
+  }
+
+  console.log('email parsed', { 
+    i: i, 
+    subject: mail.subject, 
+    seqno: seqno, 
+    uid: attributes.uid,
+    attributes: attributes 
+  });
+
+  console.log('attempting to mark msg read/seen');
+  mailListener.imap.addFlags(mailuid, '\\Seen', function (err) {
+    if (err) {
+      console.log('error marking message read/SEEN');
+      return;
+    }
+
+    console.log('moving ' + (seqno || '?') + ' to ' + toMailbox);
+      mailListener.imap.move(mailuid, toMailbox, function (err) {
+        if (err) {
+          console.log('error moving message');
+          return;
+        }
+        console.log('moved ' + (seqno || '?'), mail.subject);
+      });
+  });
+});
+
+mailListener.start(); // start listening
+
+// When testing this script with GMail in US it took about 
+// 8 seconds to get unread email list, another 40 seconds 
+// to archive those 20 messages (move to All Mail).
+setTimeout(function () {
+  mailListener.stop();
+}, 60*1000); // 60 seconds
+
 
 ```
 
-That's easy!
-
+Now moving mail is easy too!
 
 ## License
 
