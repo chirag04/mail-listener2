@@ -76,7 +76,7 @@ function parseUnread() {
       f.on('message', function(msg, seqno) {
         var parser = new MailParser(self.mailParserOptions);
         parser.on("end", function(mail) {
-          self.emit('mail', mail);
+          self.emit('mail', mail, seqno);
         });
         msg.on('body', function(stream, info) {
           stream.pipe(parser);
