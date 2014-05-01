@@ -6,10 +6,10 @@ var MailParser = require("mailparser").MailParser;
 module.exports = MailListener;
 
 function MailListener(options) {
-  this.markSeen = !!options.markSeen;
+  this.markSeen = !! options.markSeen;
   this.mailbox = options.mailbox || "INBOX";
   this.searchFilter = options.searchFilter || "UNSEEN";
-  this.fetchUnreadOnStart = !!options.fetchUnreadOnStart;
+  this.fetchUnreadOnStart = !! options.fetchUnreadOnStart;
   this.mailParserOptions = options.mailParserOptions || {},
   this.imap = new Imap({
     xoauth2: options.xoauth2,
@@ -20,7 +20,7 @@ function MailListener(options) {
     tls: options.tls,
     tlsOptions: options.tlsOptions || {}
   });
-  
+
   this.imap.once('ready', imapReady.bind(this));
   this.imap.once('close', imapClose.bind(this));
   this.imap.on('error', imapError.bind(this));
@@ -39,11 +39,11 @@ MailListener.prototype.stop = function() {
 function imapReady() {
   var self = this;
   this.imap.openBox(this.mailbox, false, function(err, mailbox) {
-    if(err) {
-      self.emit('error',err);
+    if (err) {
+      self.emit('error', err);
     } else {
       self.emit('server:connected');
-      if(self.fetchUnreadOnStart) {
+      if (self.fetchUnreadOnStart) {
         parseUnread.call(self);
       }
       self.imap.on('mail', imapMail.bind(self));
@@ -56,7 +56,7 @@ function imapClose() {
 }
 
 function imapError(err) {
-  this.emit('error',err);
+  this.emit('error', err);
 }
 
 function imapMail() {
@@ -65,22 +65,25 @@ function imapMail() {
 
 function parseUnread() {
   var self = this;
-  this.imap.search([ self.searchFilter ], function(err, results) {
+  this.imap.search([self.searchFilter], function(err, results) {
     if (err) {
-      self.emit('error',err);
-    } else if(results.length > 0) {
-      var f = self.imap.fetch(results, { bodies: '', markSeen: self.markSeen });
+      self.emit('error', err);
+    } else if (results.length > 0) {
+      var f = self.imap.fetch(results, {
+        bodies: '',
+        markSeen: self.markSeen
+      });
       f.on('message', function(msg, seqno) {
         var parser = new MailParser(self.mailParserOptions);
         parser.on("end", function(mail) {
-          self.emit('mail',mail);
+          self.emit('mail', mail);
         });
         msg.on('body', function(stream, info) {
           stream.pipe(parser);
         });
       });
       f.once('error', function(err) {
-        self.emit('error',err);
+        self.emit('error', err);
       });
     }
   });
