@@ -75,11 +75,16 @@ function parseUnread() {
       });
       f.on('message', function(msg, seqno) {
         var parser = new MailParser(self.mailParserOptions);
+        var attributes = null;
+        
         parser.on("end", function(mail) {
-          self.emit('mail', mail, seqno);
+          self.emit('mail', mail, seqno, attributes);
         });
         msg.on('body', function(stream, info) {
           stream.pipe(parser);
+        });
+        msg.on('attributes', function(attrs) {
+          attributes = attrs;
         });
       });
       f.once('error', function(err) {

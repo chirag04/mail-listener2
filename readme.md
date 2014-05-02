@@ -51,7 +51,7 @@ mailListener.on("error", function(err){
   console.log(err);
 });
 
-mailListener.on("mail", function(mail){
+mailListener.on("mail", function(mail, seqno, attributes){
   // do something with mail object including attachments
   console.log("emailParsed", mail);
   // mail processing code goes here
