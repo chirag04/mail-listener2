@@ -10,7 +10,8 @@ var mailListener = new MailListener({
   mailbox: "INBOX",
   markSeen: true,
   fetchUnreadOnStart: true,
-  mailParserOptions: {streamAttachments: true}
+  attachments: true,
+  attachmentOptions: { directory: "attachments/" }
 });
 
 mailListener.start();
@@ -29,4 +30,8 @@ mailListener.on("error", function(err){
 
 mailListener.on("mail", function(mail){
   console.log(mail);
+});
+
+mailListener.on("attachment", function(attachment){
+  console.log(attachment);
 });
