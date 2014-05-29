@@ -4,6 +4,7 @@ var EventEmitter = require('events').EventEmitter;
 var MailParser = require("mailparser").MailParser;
 var fs = require("fs");
 var path = require('path');
+var async = require('async');
 
 module.exports = MailListener;
 
@@ -17,10 +18,11 @@ function MailListener(options) {
   }
   this.fetchUnreadOnStart = !! options.fetchUnreadOnStart;
   this.mailParserOptions = options.mailParserOptions || {};
-  if (options.attachments) {
+  if (options.attachments && options.attachmentOptions && options.attachmentOptions.stream) {
     this.mailParserOptions.streamAttachments = true;
   }
-  this.attachmentOptions = options.attachmentOptions || { directory: '' };
+  this.attachmentOptions = options.attachmentOptions || {};
+  this.attachmentOptions.directory = (options.attachmentOptions.directory ? options.attachmentOptions.directory : '');
   this.imap = new Imap({
     xoauth2: options.xoauth2,
     user: options.username,
@@ -88,18 +90,27 @@ function parseUnread() {
         var attributes = null;
         
         parser.on("end", function(mail) {
-          self.emit('mail', mail, seqno, attributes);
+
+          if (!self.mailParserOptions.streamAttachments) {
+            async.each(mail.attachments, function( attachment, callback) {
+              fs.writeFile(self.attachmentOptions.directory + attachment.generatedFileName, attachment.content, function(err) {
+                if(err) {
+                  self.emit('error', err);
+                  callback()
+                } else {
+                  attachment.path = path.resolve(self.attachmentOptions.directory + attachment.generatedFileName);
+                  self.emit('attachment', attachment);
+                  callback()
+                }
+              });
+            }, function(err){
+              self.emit('mail', mail, seqno, attributes);
+            });
+          }
         });
-        if (self.mailParserOptions.streamAttachments) {
-          parser.on("attachment", function (attachment) {
-            var output = fs.createWriteStream(self.attachmentOptions.directory + attachment.generatedFileName);
-            var w = attachment.stream.pipe(output);
-            w.on('finish', function(){
-              attachment.path = path.resolve(self.attachmentOptions.directory + attachment.generatedFileName);
-              self.emit('attachment', attachment);
-            })
-          });
-        }
+        parser.on("attachment", function (attachment) {
+          self.emit('attachment', attachment);
+        });
         msg.on('body', function(stream, info) {
           stream.pipe(parser);
         });

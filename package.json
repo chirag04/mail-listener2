@@ -4,7 +4,8 @@
     "description": "Mail listener library for node.js. Get notification when new email arrived.",
     "dependencies": {
       "imap": "*",
-      "mailparser": "*"
+      "mailparser": "*",
+      "async": "^0.9.0"
     },
     "repository": {
         "type": "git",
