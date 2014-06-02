@@ -81,45 +81,51 @@ function parseUnread() {
     if (err) {
       self.emit('error', err);
     } else if (results.length > 0) {
-      var f = self.imap.fetch(results, {
-        bodies: '',
-        markSeen: self.markSeen
-      });
-      f.on('message', function(msg, seqno) {
-        var parser = new MailParser(self.mailParserOptions);
-        var attributes = null;
-        
-        parser.on("end", function(mail) {
+      async.each(results, function( result, callback) {
+        var f = self.imap.fetch(result, {
+          bodies: '',
+          markSeen: self.markSeen
+        });
+        f.on('message', function(msg, seqno) {
+          var parser = new MailParser(self.mailParserOptions);
+          var attributes = null;
 
-          if (!self.mailParserOptions.streamAttachments) {
-            async.each(mail.attachments, function( attachment, callback) {
-              fs.writeFile(self.attachmentOptions.directory + attachment.generatedFileName, attachment.content, function(err) {
-                if(err) {
-                  self.emit('error', err);
-                  callback()
-                } else {
-                  attachment.path = path.resolve(self.attachmentOptions.directory + attachment.generatedFileName);
-                  self.emit('attachment', attachment);
-                  callback()
-                }
+          parser.on("end", function(mail) {
+            if (!self.mailParserOptions.streamAttachments) {
+              async.each(mail.attachments, function( attachment, callback) {
+                fs.writeFile(self.attachmentOptions.directory + attachment.generatedFileName, attachment.content, function(err) {
+                  if(err) {
+                    self.emit('error', err);
+                    callback()
+                  } else {
+                    attachment.path = path.resolve(self.attachmentOptions.directory + attachment.generatedFileName);
+                    self.emit('attachment', attachment);
+                    callback()
+                  }
+                });
+              }, function(err){
+                self.emit('mail', mail, seqno, attributes);
+                callback()
               });
-            }, function(err){
-              self.emit('mail', mail, seqno, attributes);
-            });
-          }
+            }
+          });
+          parser.on("attachment", function (attachment) {
+            self.emit('attachment', attachment);
+          });
+          msg.on('body', function(stream, info) {
+            stream.pipe(parser);
+          });
+          msg.on('attributes', function(attrs) {
+            attributes = attrs;
+          });
         });
-        parser.on("attachment", function (attachment) {
-          self.emit('attachment', attachment);
+        f.once('error', function(err) {
+          self.emit('error', err);
         });
-        msg.on('body', function(stream, info) {
-          stream.pipe(parser);
-        });
-        msg.on('attributes', function(attrs) {
-          attributes = attrs;
-        });
-      });
-      f.once('error', function(err) {
-        self.emit('error', err);
+      }, function(err){
+        if( err ) {
+          self.emit('error', err);
+        }
       });
     }
   });
