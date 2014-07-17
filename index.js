@@ -4,6 +4,7 @@ var EventEmitter = require('events').EventEmitter;
 var MailParser = require("mailparser").MailParser;
 var fs = require("fs");
 var path = require('path');
+var async = require('async');
 
 module.exports = MailListener;
 
@@ -17,10 +18,11 @@ function MailListener(options) {
   }
   this.fetchUnreadOnStart = !! options.fetchUnreadOnStart;
   this.mailParserOptions = options.mailParserOptions || {};
-  if (options.attachments) {
+  if (options.attachments && options.attachmentOptions && options.attachmentOptions.stream) {
     this.mailParserOptions.streamAttachments = true;
   }
-  this.attachmentOptions = options.attachmentOptions || { directory: '' };
+  this.attachmentOptions = options.attachmentOptions || {};
+  this.attachmentOptions.directory = (options.attachmentOptions.directory ? options.attachmentOptions.directory : '');
   this.imap = new Imap({
     xoauth2: options.xoauth2,
     user: options.username,
@@ -79,36 +81,51 @@ function parseUnread() {
     if (err) {
       self.emit('error', err);
     } else if (results.length > 0) {
-      var f = self.imap.fetch(results, {
-        bodies: '',
-        markSeen: self.markSeen
-      });
-      f.on('message', function(msg, seqno) {
-        var parser = new MailParser(self.mailParserOptions);
-        var attributes = null;
-        
-        parser.on("end", function(mail) {
-          self.emit('mail', mail, seqno, attributes);
+      async.each(results, function( result, callback) {
+        var f = self.imap.fetch(result, {
+          bodies: '',
+          markSeen: self.markSeen
         });
-        if (self.mailParserOptions.streamAttachments) {
-          parser.on("attachment", function (attachment) {
-            var output = fs.createWriteStream(self.attachmentOptions.directory + attachment.generatedFileName);
-            var w = attachment.stream.pipe(output);
-            w.on('finish', function(){
-              attachment.path = path.resolve(self.attachmentOptions.directory + attachment.generatedFileName);
-              self.emit('attachment', attachment);
-            })
+        f.on('message', function(msg, seqno) {
+          var parser = new MailParser(self.mailParserOptions);
+          var attributes = null;
+
+          parser.on("end", function(mail) {
+            if (!self.mailParserOptions.streamAttachments) {
+              async.each(mail.attachments, function( attachment, callback) {
+                fs.writeFile(self.attachmentOptions.directory + attachment.generatedFileName, attachment.content, function(err) {
+                  if(err) {
+                    self.emit('error', err);
+                    callback()
+                  } else {
+                    attachment.path = path.resolve(self.attachmentOptions.directory + attachment.generatedFileName);
+                    self.emit('attachment', attachment);
+                    callback()
+                  }
+                });
+              }, function(err){
+                self.emit('mail', mail, seqno, attributes);
+                callback()
+              });
+            }
           });
+          parser.on("attachment", function (attachment) {
+            self.emit('attachment', attachment);
+          });
+          msg.on('body', function(stream, info) {
+            stream.pipe(parser);
+          });
+          msg.on('attributes', function(attrs) {
+            attributes = attrs;
+          });
+        });
+        f.once('error', function(err) {
+          self.emit('error', err);
+        });
+      }, function(err){
+        if( err ) {
+          self.emit('error', err);
         }
-        msg.on('body', function(stream, info) {
-          stream.pipe(parser);
-        });
-        msg.on('attributes', function(attrs) {
-          attributes = attrs;
-        });
-      });
-      f.once('error', function(err) {
-        self.emit('error', err);
       });
     }
   });
