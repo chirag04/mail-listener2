@@ -107,6 +107,8 @@ function parseUnread() {
                 self.emit('mail', mail, seqno, attributes);
                 callback()
               });
+            } else {
+              self.emit('mail',mail,seqno,attributes);
             }
           });
           parser.on("attachment", function (attachment) {
