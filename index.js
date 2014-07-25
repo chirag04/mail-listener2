@@ -22,7 +22,7 @@ function MailListener(options) {
     this.mailParserOptions.streamAttachments = true;
   }
   this.attachmentOptions = options.attachmentOptions || {};
-  this.attachmentOptions.directory = (options.attachmentOptions.directory ? options.attachmentOptions.directory : '');
+  this.attachmentOptions.directory = (this.attachmentOptions.directory ? this.attachmentOptions.directory : '');
   this.imap = new Imap({
     xoauth2: options.xoauth2,
     user: options.username,
