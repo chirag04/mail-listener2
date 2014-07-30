@@ -91,7 +91,7 @@ function parseUnread() {
           var attributes = null;
 
           parser.on("end", function(mail) {
-            if (!self.mailParserOptions.streamAttachments) {
+            if (!self.mailParserOptions.streamAttachments && mail.attachments) {
               async.each(mail.attachments, function( attachment, callback) {
                 fs.writeFile(self.attachmentOptions.directory + attachment.generatedFileName, attachment.content, function(err) {
                   if(err) {
