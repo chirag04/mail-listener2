@@ -23,6 +23,7 @@ function MailListener(options) {
   }
   this.attachmentOptions = options.attachmentOptions || {};
   this.attachmentOptions.directory = (this.attachmentOptions.directory ? this.attachmentOptions.directory : '');
+  this.attachmentOptions.useSubdirectories = (this.attachmentOptions.useSubdirectories ? this.attachmentOptions.useSubdirectories : false);
   this.imap = new Imap({
     xoauth2: options.xoauth2,
     user: options.username,
@@ -93,12 +94,18 @@ function parseUnread() {
           parser.on("end", function(mail) {
             if (!self.mailParserOptions.streamAttachments && mail.attachments) {
               async.each(mail.attachments, function( attachment, callback) {
-                fs.writeFile(self.attachmentOptions.directory + attachment.generatedFileName, attachment.content, function(err) {
+                var directory = self.attachmentOptions.directory;
+                if (self.attachmentOptions.useSubdirectories)
+                {
+                    directory += (mail.messageId + '/');
+                    fs.mkdir(directory);
+                }
+                fs.writeFile(directory + attachment.generatedFileName, attachment.content, function(err) {
                   if(err) {
                     self.emit('error', err);
                     callback()
                   } else {
-                    attachment.path = path.resolve(self.attachmentOptions.directory + attachment.generatedFileName);
+                    attachment.path = path.resolve(directory + attachment.generatedFileName);
                     self.emit('attachment', attachment);
                     callback()
                   }
