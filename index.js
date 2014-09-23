@@ -22,6 +22,7 @@ function MailListener(options) {
     this.mailParserOptions.streamAttachments = true;
   }
   this.attachmentOptions = options.attachmentOptions || {};
+  this.attachments = options.attachments || false;
   this.attachmentOptions.directory = (this.attachmentOptions.directory ? this.attachmentOptions.directory : '');
   this.imap = new Imap({
     xoauth2: options.xoauth2,
@@ -91,7 +92,7 @@ function parseUnread() {
           var attributes = null;
 
           parser.on("end", function(mail) {
-            if (!self.mailParserOptions.streamAttachments && mail.attachments) {
+            if (!self.mailParserOptions.streamAttachments && mail.attachments && self.attachments) {
               async.each(mail.attachments, function( attachment, callback) {
                 fs.writeFile(self.attachmentOptions.directory + attachment.generatedFileName, attachment.content, function(err) {
                   if(err) {
