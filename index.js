@@ -82,6 +82,7 @@ function parseUnread() {
     if (err) {
       self.emit('error', err);
     } else if (results.length > 0) {
+      var remaining = results.length;
       async.each(results, function(result, callback) {
         var f = self.imap.fetch(result, {
           bodies: '',
@@ -110,6 +111,10 @@ function parseUnread() {
               });
             } else {
               self.emit('mail', mail, seqno, attributes);
+            }
+            remaining = remaining - 1;
+            if (remaining == 0) {
+              self.emit('done');
             }
           });
           parser.on("attachment", function (attachment) {

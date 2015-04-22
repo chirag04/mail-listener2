@@ -63,6 +63,11 @@ mailListener.on("attachment", function(attachment){
   console.log(attachment.path);
 });
 
+mailListener.on("done", function(attachment){
+  console.log("No more messages");
+});
+
+
 // it's possible to access imap object from node-imap library for performing additional actions. E.x.
 mailListener.imap.move(:msguids, :mailboxes, function(){})
 
