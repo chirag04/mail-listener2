@@ -135,6 +135,8 @@ function parseUnread() {
           self.emit('error', err);
         }
       });
+    } else {
+      self.emit('done');
     }
   });
 }
