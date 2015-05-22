@@ -3,7 +3,7 @@
     "version": "0.1.8",
     "description": "Mail listener library for node.js. Get notification when new email arrived.",
     "dependencies": {
-      "imap": "https://github.com/getfyre/node-imap.git",
+      "imap": "https://github.com/getfyre/node-imap/archive/0.8.15.tar.gz",
       "mailparser": "~0.4.6",
       "async": "^0.9.0"
     },
