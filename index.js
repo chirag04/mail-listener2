@@ -36,7 +36,7 @@ function MailListener(options) {
     socketTimeout: options.socketTimeout,
     keepalive: options.keepalive,
     connTimeout: options.connTimeout,
-    authTimeout: options.authTimeout;
+    authTimeout: options.authTimeout
   });
 
   this.imap.once('ready', imapReady.bind(this));
