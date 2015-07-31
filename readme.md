@@ -21,7 +21,7 @@ JavaScript Code:
 var MailListener = require("mail-listener2");
 
 var mailListener = new MailListener({
-  imap: {
+  imap: { // please refer to the node-imap documentation for more details on configuration
     username: "imap-username",
     password: "imap-password",
     host: "imap-host",
