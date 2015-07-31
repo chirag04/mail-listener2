@@ -1,12 +1,14 @@
 var MailListener = require("./");
 
 var mailListener = new MailListener({
-  username: "xxxx",
-  password: "xxx",
-  host: "imap.gmail.com",
-  port: 993,
-  tls: true,
-  tlsOptions: { rejectUnauthorized: false },
+  imap: {
+    username: "xxxx",
+    password: "xxx",
+    host: "imap.gmail.com",
+    port: 993,
+    tls: true,
+    tlsOptions: { rejectUnauthorized: false }
+  },
   mailbox: "INBOX",
   markSeen: true,
   fetchUnreadOnStart: true,
