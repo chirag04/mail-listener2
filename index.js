@@ -25,6 +25,18 @@ function MailListener(options) {
   this.attachments = options.attachments || false;
   this.attachmentOptions.directory = (this.attachmentOptions.directory ? this.attachmentOptions.directory : '');
 
+  if (!options.imap) {
+    options.imap = {
+      xoauth2: options.xoauth2,
+      user: options.username,
+      password: options.password,
+      host: options.host,
+      port: options.port,
+      tls: options.tls,
+      tlsOptions: options.tlsOptions || {}
+    };
+  }
+
   this.imap = new Imap(options.imap);
   this.imap.once('ready', imapReady.bind(this));
   this.imap.once('close', imapClose.bind(this));
