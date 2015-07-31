@@ -22,7 +22,7 @@ var MailListener = require("mail-listener2");
 
 var mailListener = new MailListener({
   imap: { // please refer to the node-imap documentation for more details on configuration
-    username: "imap-username",
+    user: "imap-username",
     password: "imap-password",
     host: "imap-host",
     port: 993, // imap port
