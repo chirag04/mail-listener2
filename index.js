@@ -24,16 +24,20 @@ function MailListener(options) {
   this.attachmentOptions = options.attachmentOptions || {};
   this.attachments = options.attachments || false;
   this.attachmentOptions.directory = (this.attachmentOptions.directory ? this.attachmentOptions.directory : '');
-  this.imap = new Imap({
-    xoauth2: options.xoauth2,
-    user: options.username,
-    password: options.password,
-    host: options.host,
-    port: options.port,
-    tls: options.tls,
-    tlsOptions: options.tlsOptions || {}
-  });
 
+  if (!options.imap) {
+    options.imap = {
+      xoauth2: options.xoauth2,
+      user: options.username,
+      password: options.password,
+      host: options.host,
+      port: options.port,
+      tls: options.tls,
+      tlsOptions: options.tlsOptions || {}
+    };
+  }
+
+  this.imap = new Imap(options.imap);
   this.imap.once('ready', imapReady.bind(this));
   this.imap.once('close', imapClose.bind(this));
   this.imap.on('error', imapError.bind(this));

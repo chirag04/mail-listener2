@@ -21,12 +21,14 @@ JavaScript Code:
 var MailListener = require("mail-listener2");
 
 var mailListener = new MailListener({
-  username: "imap-username",
-  password: "imap-password",
-  host: "imap-host",
-  port: 993, // imap port
-  tls: true,
-  tlsOptions: { rejectUnauthorized: false },
+  imap: { // please refer to the node-imap documentation for more details on configuration
+    user: "imap-username",
+    password: "imap-password",
+    host: "imap-host",
+    port: 993, // imap port
+    tls: true,
+    tlsOptions: { rejectUnauthorized: false }
+  },
   mailbox: "INBOX", // mailbox to monitor
   searchFilter: ["UNSEEN", "FLAGGED"], // the search filter being used after an IDLE notification has been retrieved
   markSeen: true, // all fetched email willbe marked as seen and not fetched next time
