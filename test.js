@@ -10,6 +10,7 @@ var mailListener = new MailListener({
   mailbox: "INBOX",
   authTimeout: 50000,
   connTimeout: 50000,
+  debug:console.log,
   markSeen: true,
   fetchUnreadOnStart: true,
   attachments: true,
