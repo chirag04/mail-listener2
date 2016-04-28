@@ -8,6 +8,8 @@ var mailListener = new MailListener({
   tls: true,
   tlsOptions: { rejectUnauthorized: false },
   mailbox: "INBOX",
+  authTimeout: 50000,
+  connTimeout: 50000,
   markSeen: true,
   fetchUnreadOnStart: true,
   attachments: true,

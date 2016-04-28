@@ -27,6 +27,9 @@ var mailListener = new MailListener({
   port: 993, // imap port
   tls: true,
   tlsOptions: { rejectUnauthorized: false },
+  authTimeout:50000, // how long to wait before timing out while authenticating (useful for imap providers that take awhile, such as office 365)
+  connTimeout:50000, // how long to wait before timing out while connection
+  debug:console.log, // function to call imap connection debug messages on (defaults to nothing)
   mailbox: "INBOX", // mailbox to monitor
   searchFilter: ["UNSEEN", "FLAGGED"], // the search filter being used after an IDLE notification has been retrieved
   markSeen: true, // all fetched email willbe marked as seen and not fetched next time
@@ -71,9 +74,9 @@ mailListener.imap.move(:msguids, :mailboxes, function(){})
 That's easy!
 
 ## Attachments
-Attachments can be streamed or buffered. This feature is based on how [mailparser](https://github.com/andris9/mailparser#attachments) handles attachments. 
+Attachments can be streamed or buffered. This feature is based on how [mailparser](https://github.com/andris9/mailparser#attachments) handles attachments.
 Setting `attachments: true` will download attachments as buffer objects by default to the project directory.
-A specific download directory may be specified by setting `attachmentOptions: { directory: "attachments/"}`. 
+A specific download directory may be specified by setting `attachmentOptions: { directory: "attachments/"}`.
 Attachments may also be streamed using `attachmentOptions: { stream: "true"}`. The `"attachment"` event will be fired every time an attachment is encountered.
 Refer to the [mailparser docs](https://github.com/andris9/mailparser#attachment-streaming) for specifics on how to stream attachments.
 
