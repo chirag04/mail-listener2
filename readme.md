@@ -1,6 +1,6 @@
 # Overview
 
-Mail-listener2 library for node.js. Get notification when new email arrived to inbox. Uses IMAP protocol.
+Mail-listener2 library for node.js. Get notification when new email arrived to inbox or when message metadata (e.g. flags) changes externally. Uses IMAP protocol.
 
 We are using these libraries: [node-imap](https://github.com/mscdex/node-imap), [mailparser](https://github.com/andris9/mailparser).
 
@@ -74,9 +74,9 @@ mailListener.imap.move(:msguids, :mailboxes, function(){})
 That's easy!
 
 ## Attachments
-Attachments can be streamed or buffered. This feature is based on how [mailparser](https://github.com/andris9/mailparser#attachments) handles attachments. 
+Attachments can be streamed or buffered. This feature is based on how [mailparser](https://github.com/andris9/mailparser#attachments) handles attachments.
 Setting `attachments: true` will download attachments as buffer objects by default to the project directory.
-A specific download directory may be specified by setting `attachmentOptions: { directory: "attachments/"}`. 
+A specific download directory may be specified by setting `attachmentOptions: { directory: "attachments/"}`.
 Attachments may also be streamed using `attachmentOptions: { stream: "true"}`. The `"attachment"` event will be fired every time an attachment is encountered.
 Refer to the [mailparser docs](https://github.com/andris9/mailparser#attachment-streaming) for specifics on how to stream attachments.
 
