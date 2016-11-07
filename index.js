@@ -62,7 +62,9 @@ function imapReady() {
       if (self.fetchUnreadOnStart) {
         parseUnread.call(self);
       }
-      self.imap.on('mail', imapMail.bind(self));
+      var listener = imapMail.bind(self);
+      self.imap.on('mail', listener);
+      self.imap.on('update', listener);
     }
   });
 }
