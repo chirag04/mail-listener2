@@ -93,8 +93,10 @@ function parseUnread() {
         f.on('message', function(msg, seqno) {
           var parser = new MailParser(self.mailParserOptions);
           var attributes = null;
+          var emlbuffer = new Buffer('');
 
           parser.on("end", function(mail) {
+            mail.eml = emlbuffer.toString('utf-8');
             if (!self.mailParserOptions.streamAttachments && mail.attachments && self.attachments) {
               async.each(mail.attachments, function( attachment, callback) {
                 fs.writeFile(self.attachmentOptions.directory + attachment.generatedFileName, attachment.content, function(err) {
@@ -119,7 +121,13 @@ function parseUnread() {
             self.emit('attachment', attachment);
           });
           msg.on('body', function(stream, info) {
-            stream.pipe(parser);
+            stream.on('data', function(chunk) {
+              emlbuffer = Buffer.concat([emlbuffer, chunk]);
+            });
+            stream.once('end', function() {
+              parser.write(emlbuffer);
+              parser.end();
+            });
           });
           msg.on('attributes', function(attrs) {
             attributes = attrs;
