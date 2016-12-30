@@ -30,6 +30,9 @@ var mailListener = new MailListener({
   authTimeout: 5000, // Default by node-imap,
   debug: console.log, // Or your custom function with only one incoming argument. Default: null
   tlsOptions: { rejectUnauthorized: false },
+  authTimeout:50000, // how long to wait before timing out while authenticating (useful for imap providers that take awhile, such as office 365)
+  connTimeout:50000, // how long to wait before timing out while connection
+  debug:console.log, // function to call imap connection debug messages on (defaults to nothing)
   mailbox: "INBOX", // mailbox to monitor
   searchFilter: ["UNSEEN", "FLAGGED"], // the search filter being used after an IDLE notification has been retrieved
   markSeen: true, // all fetched email willbe marked as seen and not fetched next time
