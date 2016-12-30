@@ -1,10 +1,10 @@
-var Imap = require('imap');
-var util = require('util');
-var EventEmitter = require('events').EventEmitter;
-var MailParser = require("mailparser").MailParser;
-var fs = require("fs");
-var path = require('path');
-var async = require('async');
+var Imap = require('imap'),
+    util = require('util'),
+    EventEmitter = require('events').EventEmitter,
+    MailParser = require("mailparser").MailParser,
+    fs = require("fs"),
+    path = require('path'),
+    async = require('async');
 
 module.exports = MailListener;
 
@@ -87,7 +87,8 @@ function parseUnread() {
     if (err) {
       self.emit('error', err);
     } else if (results.length > 0) {
-      async.each(results, function( result, callback) {
+      var remaining = results.length;
+      async.each(results, function(result, callback) {
         var f = self.imap.fetch(result, {
           bodies: '',
           markSeen: self.markSeen
@@ -100,15 +101,15 @@ function parseUnread() {
           parser.on("end", function(mail) {
             mail.eml = emlbuffer.toString('utf-8');
             if (!self.mailParserOptions.streamAttachments && mail.attachments && self.attachments) {
-              async.each(mail.attachments, function( attachment, callback) {
+              async.each(mail.attachments, function(attachment, callback) {
                 fs.writeFile(self.attachmentOptions.directory + attachment.generatedFileName, attachment.content, function(err) {
-                  if(err) {
+                  if (err) {
                     self.emit('error', err);
-                    callback()
+                    callback();
                   } else {
                     attachment.path = path.resolve(self.attachmentOptions.directory + attachment.generatedFileName);
                     self.emit('attachment', attachment);
-                    callback()
+                    callback();
                   }
                 });
               }, function(err){
@@ -116,7 +117,11 @@ function parseUnread() {
                 callback()
               });
             } else {
-              self.emit('mail',mail,seqno,attributes);
+              self.emit('mail', mail, seqno, attributes);
+            }
+            remaining = remaining - 1;
+            if (remaining == 0) {
+              self.emit('done');
             }
           });
           parser.on("attachment", function (attachment) {
@@ -139,10 +144,12 @@ function parseUnread() {
           self.emit('error', err);
         });
       }, function(err){
-        if( err ) {
+        if(err) {
           self.emit('error', err);
         }
       });
+    } else {
+      self.emit('done');
     }
   });
 }
