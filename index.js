@@ -32,6 +32,9 @@ function MailListener(options) {
     port: options.port,
     tls: options.tls,
     tlsOptions: options.tlsOptions || {},
+    socket: options.socket,
+    socketTimeout: options.socketTimeout,
+    keepalive: options.keepalive,
     connTimeout: options.connTimeout || null,
     authTimeout: options.authTimeout || null,
     debug: options.debug || null
