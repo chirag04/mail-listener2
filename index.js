@@ -144,8 +144,8 @@ function parseUnread() {
               callback();
             }
           });
-          parser.on("attachment", function (attachment) {
-            self.emit('attachment', attachment);
+          parser.on("attachment", function (attachment, email) {
+            self.emit('attachment', attachment, email);
           });
           msg.on('body', function(stream, info) {
             stream.on('data', function(chunk) {
