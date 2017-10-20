@@ -169,6 +169,8 @@ function parseUnread() {
         }
 
       });
+    } else {
+      self.parsingUnread = false;
     }
   });
 }
