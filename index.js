@@ -9,7 +9,9 @@ var async = require('async');
 module.exports = MailListener;
 
 function MailListener(options) {
-  this.markSeen = !! options.markSeen;
+  this.haveNewEmails = false;
+  this.parsingUnread = false;
+  this.markSeen = !!options.markSeen;
   this.mailbox = options.mailbox || "INBOX";
   if ('string' === typeof options.searchFilter) {
     this.searchFilter = [options.searchFilter];
@@ -37,8 +39,8 @@ function MailListener(options) {
     debug: options.debug || null
   });
 
-  this.imap.once('ready', imapReady.bind(this));
-  this.imap.once('close', imapClose.bind(this));
+  this.imap.on('ready', imapReady.bind(this));
+  this.imap.on('close', imapClose.bind(this));
   this.imap.on('error', imapError.bind(this));
 }
 
@@ -50,6 +52,15 @@ MailListener.prototype.start = function() {
 
 MailListener.prototype.stop = function() {
   this.imap.end();
+};
+
+MailListener.prototype.restart = function() {
+  console.log('detaching existing listener');
+  this.imap.removeAllListeners('mail');
+  this.imap.removeAllListeners('update');
+
+  console.log('calling imap connect');
+  this.imap.connect();
 };
 
 function imapReady() {
@@ -78,7 +89,12 @@ function imapError(err) {
 }
 
 function imapMail() {
-  parseUnread.call(this);
+  if (!this.haveNewEmails && !this.parsingUnread) {
+    parseUnread.call(this);
+    this.parsingUnread = true;
+  } else if (this.parsingUnread) {
+    this.haveNewEmails = true;
+  }
 }
 
 function parseUnread() {
@@ -87,7 +103,15 @@ function parseUnread() {
     if (err) {
       self.emit('error', err);
     } else if (results.length > 0) {
-      async.each(results, function( result, callback) {
+      
+      self.imap.setFlags(results, ['\\Seen'], function (err) {
+        if (err) {
+          console.log(JSON.stringify(err, null, 2));
+        }
+      });
+
+
+      async.each(results, function (result, callback) {
         var f = self.imap.fetch(result, {
           bodies: '',
           markSeen: self.markSeen
@@ -117,10 +141,11 @@ function parseUnread() {
               });
             } else {
               self.emit('mail',mail,seqno,attributes);
+              callback();
             }
           });
-          parser.on("attachment", function (attachment) {
-            self.emit('attachment', attachment);
+          parser.on("attachment", function (attachment, email) {
+            self.emit('attachment', attachment, email);
           });
           msg.on('body', function(stream, info) {
             stream.on('data', function(chunk) {
@@ -138,11 +163,23 @@ function parseUnread() {
         f.once('error', function(err) {
           self.emit('error', err);
         });
-      }, function(err){
-        if( err ) {
+      }, function (err) {
+        console.log('all process');
+        if (err) {
           self.emit('error', err);
         }
+
+
+        if (self.haveNewEmails) {
+          self.haveNewEmails = false;
+          parseUnread.call(self);
+        } else {
+          self.parsingUnread = false;
+        }
+
       });
+    } else {
+      self.parsingUnread = false;
     }
   });
 }
