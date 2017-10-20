@@ -1,7 +1,7 @@
 var MailListener = require("./");
 
 var mailListener = new MailListener({
-  username: "xxxx",
+  username: "xxx",
   password: "xxx",
   host: "imap.gmail.com",
   port: 993,
@@ -22,6 +22,10 @@ mailListener.on("server:connected", function(){
 
 mailListener.on("server:disconnected", function(){
   console.log("imapDisconnected");
+  setTimeout(function() {
+    console.log("Trying to establish imap connection again");
+    mailListener.restart();
+  }, 5* 1000);
 });
 
 mailListener.on("error", function(err){

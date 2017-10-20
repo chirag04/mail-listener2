@@ -39,8 +39,8 @@ function MailListener(options) {
     debug: options.debug || null
   });
 
-  this.imap.once('ready', imapReady.bind(this));
-  this.imap.once('close', imapClose.bind(this));
+  this.imap.on('ready', imapReady.bind(this));
+  this.imap.on('close', imapClose.bind(this));
   this.imap.on('error', imapError.bind(this));
 }
 
@@ -52,6 +52,12 @@ MailListener.prototype.start = function() {
 
 MailListener.prototype.stop = function() {
   this.imap.end();
+};
+
+MailListener.prototype.restart = function() {
+  this.imap.removeAllListeners('mail');
+  this.imap.removeAllListeners('update');
+  this.imap.connect();
 };
 
 function imapReady() {
