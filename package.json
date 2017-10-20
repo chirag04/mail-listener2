@@ -1,7 +1,7 @@
 {
-  "name": "mail-listener2",
-  "version": "0.3.1",
-  "description": "Mail listener library for node.js. Get notification when new email arrived.",
+  "name": "mail-listener2-updated",
+  "version": "0.3.2",
+  "description": "Updated Mail listener library for node.js. Get notification when new email arrived.",
   "dependencies": {
     "imap": "~0.8.14",
     "mailparser": "^0.4.8",
@@ -10,9 +10,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/chirag04/mail-listener2.git"
+    "url": "git://github.com/dapanas/mail-listener2.git"
   },
-  "homepage": "https://github.com/chirag04/mail-listener2",
+  "homepage": "https://github.com/dapanas/mail-listener2",
   "keywords": [
     "mail",
     "job",
@@ -22,9 +22,9 @@
     "email parser"
   ],
   "author": {
-    "name": "Chirag Jain",
-    "email": "jain_chirag04@yahoo.com",
-    "url": "http://chiragjain.tumblr.com"
+    "name": "Daniel Pérez",
+    "email": "dapanas@gmail.com",
+    "url": "http://blogcito.info"
   },
   "license": "MIT"
 }
