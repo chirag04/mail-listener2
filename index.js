@@ -55,8 +55,11 @@ MailListener.prototype.stop = function() {
 };
 
 MailListener.prototype.restart = function() {
+  console.log('detaching existing listener');
   this.imap.removeAllListeners('mail');
   this.imap.removeAllListeners('update');
+
+  console.log('calling imap connect');
   this.imap.connect();
 };
 
