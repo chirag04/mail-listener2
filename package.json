@@ -17,8 +17,12 @@
     "job",
     "imap",
     "mail listener",
+    "mail listener2",
+    "mail listener3",
     "email",
-    "email parser"
+    "email parser",
+    "node imap",
+    "mail parser"
   ],
   "author": {
     "name": "Pranav Dakshinamurthy",
