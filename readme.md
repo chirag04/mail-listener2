@@ -2,9 +2,13 @@
 
 Mail-listener2 library for node.js. Get notification when new email arrived to inbox or when message metadata (e.g. flags) changes externally. Uses IMAP protocol.
 
+This package has few improvements and fixes over the mail-listener2.
+  - Fixing mime.extension is not function error
+  - adding a field which gives the total number of mails.
+
 We are using these libraries: [node-imap](https://github.com/mscdex/node-imap), [mailparser](https://github.com/andris9/mailparser).
 
-Heavily inspired by [mail-listener](https://github.com/circuithub/mail-listener).
+Heavily inspired by [mail-listener2](https://github.com/chirag04/mail-listener2).
 
 ## Use
 
@@ -31,7 +35,7 @@ var mailListener = new MailListener({
   debug: console.log, // Or your custom function with only one incoming argument. Default: null
   tlsOptions: { rejectUnauthorized: false },
   mailbox: "INBOX", // mailbox to monitor
-  searchFilter: ["UNSEEN", "FLAGGED"], // the search filter being used after an IDLE notification has been retrieved
+  searchFilter: ["ALL"], // the search filter being used after an IDLE notification has been retrieved
   markSeen: true, // all fetched email willbe marked as seen and not fetched next time
   fetchUnreadOnStart: true, // use it only if you want to get all unread email on lib start. Default is `false`,
   mailParserOptions: {streamAttachments: true}, // options to be passed to mailParser lib.
@@ -46,6 +50,10 @@ mailListener.start(); // start listening
 
 mailListener.on("server:connected", function(){
   console.log("imapConnected");
+});
+
+mailListener.on("mailbox", function(mailbox){
+  console.log("Total number of mails: ", mailbox.messages.total); // this field in mailbox gives the total number of emails
 });
 
 mailListener.on("server:disconnected", function(){
