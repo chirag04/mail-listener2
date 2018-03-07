@@ -59,6 +59,7 @@ function imapReady() {
       self.emit('error', err);
     } else {
       self.emit('server:connected');
+      self.emit('mailbox', mailbox);
       if (self.fetchUnreadOnStart) {
         parseUnread.call(self);
       }
