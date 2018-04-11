@@ -1,6 +1,6 @@
 # Overview
 
-Mail-listener2 library for node.js. Get notification when new email arrived to inbox or when message metadata (e.g. flags) changes externally. Uses IMAP protocol.
+Mail-listener4 library for node.js. Get notification when new email arrived to inbox or when message metadata (e.g. flags) changes externally. Uses IMAP protocol.
 
 This package has few improvements and fixes over the mail-listener2.
   - Fixing mime.extension is not function error
