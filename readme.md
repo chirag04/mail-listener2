@@ -14,7 +14,7 @@ Heavily inspired by [mail-listener2](https://github.com/chirag04/mail-listener2)
 
 Install
 
-`npm install mail-listener2`
+`npm install mail-listener4`
 
 
 JavaScript Code:
@@ -22,7 +22,7 @@ JavaScript Code:
 
 ```javascript
 
-var MailListener = require("mail-listener2");
+var MailListener = require("mail-listener4");
 
 var mailListener = new MailListener({
   username: "imap-username",
