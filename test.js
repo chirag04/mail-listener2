@@ -1,9 +1,9 @@
-var MailListener = require("./");
+var MailListener = require("./index.js").MailListener;
 
 var mailListener = new MailListener({
-  username: "xxxxx",
-  password: "xxx",
-  host: "imap.gmail.com",
+  username: process.env.IMAPUSER,
+  password: process.env.IMAPPASS,
+  host: process.env.IMAPHOST,
   port: 993,
   tls: true,
   connTimeout: 10000, // Default by node-imap
