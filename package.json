@@ -1,6 +1,6 @@
 {
   "name": "mail-listener5",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Mail listener library for node.js. Get notification when new email arrived.",
   "dependencies": {
     "imap": "^0.8.19",
