@@ -1,7 +1,7 @@
 {
   "name": "mail-listener-close",
-  "version": "0.0.1",
-  "description": "Mail listener library for node.js. Get notification when new email arrived.",
+  "version": "0.0.2",
+  "description": "Mail listener library for node.js. Get emails and close after ends",
   "dependencies": {
     "imap": "~0.8.14",
     "mailparser": "~0.4.6",

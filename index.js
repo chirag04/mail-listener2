@@ -139,9 +139,9 @@ function parseUnread() {
         f.once('error', function(err) {
           self.emit('error', err);
         });
-        if (this.closeAtEnd){
-          f.once('end', function() {
-            self.emit('end');
+        if (self.closeAtEnd) {
+          f.once('end', function () {
+            self.imap.end();
           });
         }        
       }, function(err){
