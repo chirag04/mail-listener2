@@ -9,6 +9,7 @@ var async = require('async');
 module.exports = MailListener;
 
 function MailListener(options) {
+  this.closeAtEnd = options.closeAtEnd;
   this.markSeen = !! options.markSeen;
   this.mailbox = options.mailbox || "INBOX";
   if ('string' === typeof options.searchFilter) {
@@ -138,6 +139,11 @@ function parseUnread() {
         f.once('error', function(err) {
           self.emit('error', err);
         });
+        if (this.closeAtEnd){
+          f.once('end', function() {
+            self.emit('end');
+          });
+        }        
       }, function(err){
         if( err ) {
           self.emit('error', err);
