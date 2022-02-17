@@ -1,16 +1,16 @@
 # Overview
 
-Mail-listener2 library for node.js. Get notification when new email arrived to inbox or when message metadata (e.g. flags) changes externally. Uses IMAP protocol.
+Mail-listener-close library for node.js. Get notification when new email arrived to inbox or when message metadata (e.g. flags) changes externally. Uses IMAP protocol.
 
 We are using these libraries: [node-imap](https://github.com/mscdex/node-imap), [mailparser](https://github.com/andris9/mailparser).
 
-Heavily inspired by [mail-listener](https://github.com/circuithub/mail-listener).
+Heavily inspired by [mail-listener2](https://github.com/chirag04/mail-listener2).
 
 ## Use
 
 Install
 
-`npm install mail-listener2`
+`npm install mail-listener-close`
 
 
 JavaScript Code:
@@ -18,7 +18,7 @@ JavaScript Code:
 
 ```javascript
 
-var MailListener = require("mail-listener2");
+var MailListener = require("mail-listener-close");
 
 var mailListener = new MailListener({
   username: "imap-username",
